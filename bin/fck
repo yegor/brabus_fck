@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require File.expand_path("boot", File.dirname(__FILE__))
+
+@headsman = BrabusFck::Headsman.new
+@headsman.execute!

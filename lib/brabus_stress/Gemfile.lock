@@ -1,0 +1,22 @@
+GIT
+  remote: git://github.com/bazaarlabs/dante.git
+  revision: a22f6ca55b4d21317e0d190b36347c92f8d63ed8
+  specs:
+    dante (0.1.5)
+
+GEM
+  specs:
+    active_support (3.0.0)
+      activesupport (= 3.0.0)
+    activesupport (3.0.0)
+    i18n (0.6.1)
+    json (1.7.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  active_support
+  dante!
+  i18n
+  json
