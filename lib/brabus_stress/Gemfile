@@ -1,3 +1,5 @@
+source "http://rubygems.org"
+
 gem 'dante', :git => "git://github.com/bazaarlabs/dante.git"
 gem 'json'
 gem 'i18n'

@@ -1,15 +1,12 @@
 #!/usr/bin/env ruby
 require File.expand_path("boot", File.dirname(__FILE__))
-require 'dante'
 
-Dante::Runner.new('brabus_stress').execute(:daemonize => true, :pid_path => File.expand_path('pids/1', $BRABUS_STRESS_ROOT), :log_path => File.expand_path('logs/1', $BRABUS_STRESS_ROOT)) { 
+Dante.run('stress') do
   @runner = BrabusStress::Runner.new
 
-  puts "PIZDA"
   @runner.connect!
   @runner.balance
   @runner.signup_and_login
   @runner.sync_delta
   @runner.location
-  #@runner.post_to_live_feed
-}
+end
