@@ -11,7 +11,7 @@ module BrabusFck
     end
     
     def execute!
-      # BrabusFck::Uploader.upload!(@config, @logger)
+      BrabusFck::Uploader.upload!(@config, @logger)
       
       Net::SSH::Multi.start do |session|
         session.group :load_test do
