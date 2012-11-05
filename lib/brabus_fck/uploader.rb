@@ -32,14 +32,14 @@ module BrabusFck
         }
       end
         
-      # Block until all file uplaods are completed
+      # Block until all treads are completed
       threads.each {|thread| thread.join}
         
       @logger.info "Upload completed."
     end
       
     def tar_app
-      @logger.info "Updating zip archive..."    
+      @logger.info "Updating archive..."    
       system "tar --create --gzip --directory #{APPLICATION_PATH} --file #{ARCHIVE_PATH} #{APPLICATION_NAME}"
     end
       
@@ -58,14 +58,29 @@ module BrabusFck
         }
       end
         
-      # Block until all file uplaods are completed
+      # Block until all treads are completed
       threads.each {|thread| thread.join}
         
       @logger.info "Download completed."
     end
       
     def cleanup
+      @logger.info "Calling MrProper..."
+              
+      threads = []
+      @config.servers.each do |server|
+        threads <<  Thread.new {
+          Net::SSH.start(server[:host], server[:user], :keys => config.keys) do |ssh|
+            ssh.exec "rm -f #{ARCHIVE_NAME}"
+            ssh.exec "rm -rf #{APPLICATION_NAME}"
+          end
+        }
+      end
         
+      # Block until all treads are completed
+      threads.each {|thread| thread.join}
+        
+      @logger.info "MrProper is now happy."
     end
 
   end

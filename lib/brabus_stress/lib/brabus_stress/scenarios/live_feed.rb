@@ -9,7 +9,10 @@ module BrabusStress
         @runner.balance
         @runner.signup_and_login
         @runner.sync_delta
-        @runner.location
+        100.times do |i| 
+          @runner.location
+          @runner.post_to_live_feed(i)
+        end
       end
       
     end      

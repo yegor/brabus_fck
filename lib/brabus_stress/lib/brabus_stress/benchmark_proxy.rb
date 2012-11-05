@@ -12,7 +12,7 @@ module BrabusStress
     end
     
     def method_missing(sym, *args, &block)
-      @object.logger.info "#{sym.to_s}:\t #{Benchmark.measure {@object.__send__(sym, *args, &block)}}"
+      @object.logger.info "#{Time.now.utc.to_s} | #{sym.to_s} | \t #{Benchmark.measure {@object.__send__(sym, *args, &block)}}"
     end
     
   end

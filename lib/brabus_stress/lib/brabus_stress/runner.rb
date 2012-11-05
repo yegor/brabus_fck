@@ -10,7 +10,7 @@ module BrabusStress
     
     def initialize
       @config = BrabusStress::Config.new
-      @logger = Logger.new STDOUT
+      @logger = Logger.new File.expand_path("logs/#{Process.pid}.log", $BRABUS_STRESS_ROOT)
     end
   end
 end
