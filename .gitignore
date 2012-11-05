@@ -1,3 +1,4 @@
 config/*.yml
 results
+log/**
 results/**
