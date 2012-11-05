@@ -2,11 +2,5 @@
 require File.expand_path("boot", File.dirname(__FILE__))
 
 Dante.run('stress') do
-  @runner = BrabusStress::Runner.new
-
-  @runner.connect!
-  @runner.balance
-  @runner.signup_and_login
-  @runner.sync_delta
-  @runner.location
+  BrabusStress::Scenarios::LiveFeed.run!
 end

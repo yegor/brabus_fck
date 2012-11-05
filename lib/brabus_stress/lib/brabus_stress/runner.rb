@@ -6,11 +6,11 @@ module BrabusStress
     include BrabusStress::Steps::Geo
     include BrabusStress::Steps::Sync
     
-    attr_accessor :config, :logger
+    attr_accessor :config, :logger, :benchmark
     
     def initialize
       @config = BrabusStress::Config.new
-      # @logger = Logger.new File.expand_path('log/brabus_stress.log', $BRABUS_STRESS_ROOT)
+      @logger = Logger.new STDOUT
     end
   end
 end
