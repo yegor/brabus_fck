@@ -10,6 +10,7 @@ module BrabusStress
         data = wait_reply "balancing/move"
         
         self.connect! :host => data['payload']['shard']['host'], :port => data['payload']['shard']['port']
+        self.log_connected
         
         send_data :path => "users/auth/balance", :payload => {:shard => data['payload']['shard']}
         data = wait_reply "balancing/settled"
@@ -30,6 +31,14 @@ module BrabusStress
         
         send_data :path => "users/auth/login", :payload => {:username => data['payload']['user']['attributes']['email'], :password => '123123'}
         wait_reply "users/auth/login/success"
+      end
+      
+      def logout
+        send_data :path => "users/auth/logout", :payload => {}
+        wait_reply "users/auth/logout/success"
+        
+        self.disconnect!
+        self.log_disconnected
       end
             
     end

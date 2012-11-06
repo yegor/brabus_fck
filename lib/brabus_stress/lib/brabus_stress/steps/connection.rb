@@ -6,14 +6,26 @@ require 'timeout'
 module BrabusStress
   module Steps
     module Connection
-      attr_accessor :socket, :the_rest
+      attr_accessor :no_ssl_socket, :socket, :the_rest
+      
+      def disconnect!
+        @no_ssl_socket.close
+      end
       
       def connect!(server = @config.server)
-        no_ssl_socket = TCPSocket.new server[:host], server[:port]
+        @no_ssl_socket = TCPSocket.new server[:host], server[:port]
         sslContext = OpenSSL::SSL::SSLContext.new
-        @socket = OpenSSL::SSL::SSLSocket.new(no_ssl_socket, sslContext)
+        @socket = OpenSSL::SSL::SSLSocket.new(@no_ssl_socket, sslContext)
         @socket.sync_close = true
         @socket.connect        
+      end
+      
+      def log_connected
+        @logger.info "connection | #{Time.now.utc.strftime "%H:%M:%S:%L"} | 1+"
+      end
+      
+      def log_disconnected
+        @logger.info "connection | #{Time.now.utc.strftime "%H:%M:%S:%L"} | 1-"
       end
       
       def send_data(data)

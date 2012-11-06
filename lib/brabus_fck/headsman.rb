@@ -20,7 +20,7 @@ module BrabusFck
     def execute!
       stress_test
       
-      @uploader.download_logs
+      # @uploader.download_logs
     end
     
     protected
@@ -36,13 +36,16 @@ module BrabusFck
         
         session.connect!
         
-        # @config.servers.each do |server|
-          # @logger.info "Launching stress test on node: #{server[:host]}."
-          # server[:amount].to_i.times do |i|
-            # session.with(:load_test).exec "bash -l -c 'cd ~/brabus_stress && rvm 1.9.2 && ./bin/stress'"
-            session.with(:load_test).exec "for i in {1..#{@config.config[:amount]}}; do bash -l -c 'cd ~/brabus_stress && ./bin/stress'; done "
-          # end
-        # end
+        session.with(:load_test).exec "rm -f ~/brabus_stress/pids/*"
+        session.with(:load_test).exec "rm -f ~/brabus_stress/logs/*"
+        session.with(:load_test).exec "for i in {1..#{@config.config[:amount]}}; do PID=$i bash -l -c 'cd ~/brabus_stress && ./bin/stress -d -P ~/brabus_stress/pids/$PID.pid' & done"
+        # session.with(:load_test).exec "for i in {1..#{@config.config[:amount]}}; do 
+        #   while sleep 1; do 
+        #     if ([ -e ~/brabus_stress/pids/$i.pid ] && ! ps -p `cat ~/brabus_stress/pids/$i.pid`); then
+        #       break
+        #     fi
+        #   done
+        # done"
       end
       
       @logger.info "Stress test completed"

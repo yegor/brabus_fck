@@ -16,7 +16,6 @@ GEM
       net-ssh (>= 2.1.4)
       net-ssh-gateway (>= 0.99.0)
     rmagick (2.13.1)
-    rubyzip (0.9.9)
 
 PLATFORMS
   ruby
@@ -28,4 +27,3 @@ DEPENDENCIES
   net-sftp
   net-ssh
   net-ssh-multi
-  rubyzip
