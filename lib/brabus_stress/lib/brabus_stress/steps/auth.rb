@@ -21,7 +21,7 @@ module BrabusStress
         phone = Time.now.to_i.to_s[-6..-1] + rand(1000).to_s
         uniq = UUID.generate.gsub("-", "")
         
-        user = {:name => "balancing_#{uniq}", :email => "balancing_#{uniq}@gmail.com", :phone_number => "+#{phone}", :car_number => "0137xx7", :password => "123123", :nickname => "Load Tester"}
+        user = {:name => "balancing_#{uniq}", :email => "#{BrabusStress::USER_GROUP}_balancing_#{uniq}@gmail.com", :phone_number => "+#{phone}", :car_number => "0137xx7", :password => "123123", :nickname => "Load Tester"}
         
         send_data :path => "users/auth/signup", :payload => {:user => user}
         data = wait_reply "users/auth/signup/success"

@@ -10,7 +10,7 @@ module BrabusStress
         @runner.signup_and_login
         @runner.sync_delta
         
-        100.times do |i| 
+        BrabusStress::LOOP_COUNT.times do |i| 
           @runner.post_to_live_feed(i)
         end
         

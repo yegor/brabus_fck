@@ -5,12 +5,12 @@ module BrabusStress
     module Geo
       
       def geocode_direct(term)
-        send_data :path => "geo/geocoding/direct/", :payload => {:latitude => 53.93935048492061, :longitude => 27.57550346667652, :term => "Некрасова #{term.to_i + 1}"}
+        send_data :path => "geo/geocoding/direct/", :payload => {:latitude => BrabusStress.random_latitude, :longitude => BrabusStress.random_longitude, :term => BrabusStress::GEOCODE_TERM}
         wait_reply "geo/geocoding/direct/success"
       end
       
       def location
-        send_data :path => "users/profile/location", :payload => {:location_container => {:lat => 53.93935048492061, :lng => 27.57550346667652}}
+        send_data :path => "users/profile/location", :payload => {:location_container => {:lat => BrabusStress.random_latitude, :lng => BrabusStress.random_longitude}}
         wait_reply "users/profile/location/success"
       end
     

@@ -9,7 +9,8 @@ module BrabusStress
       attr_accessor :no_ssl_socket, :socket, :the_rest
       
       def disconnect!
-        @no_ssl_socket.close
+        @socket.sysclose
+        # @no_ssl_socket.close
       end
       
       def connect!(server = @config.server)
@@ -50,7 +51,7 @@ module BrabusStress
             end
           end
         rescue Timeout::Error
-          puts "Time out error!"
+          puts "Time out error! #{reply_to}"
         rescue EOFError
           puts "Connection closed!"
         end        

@@ -5,7 +5,7 @@ module BrabusStress
       def post_to_live_feed(smth = "")
         send_data(:path => "messages/live_feed/create",
                   :payload => {:message => {:message => "#{smth} Testing live feed post"},
-                               :marker => {:lat => 53.93950240691559, :lng => 27.5753717869777, :kind => "message"}
+                               :marker => {:lat => BrabusStress.random_latitude, :lng => BrabusStress.random_longitude, :kind => "message"}
                               })
         wait_reply "messages/live_feed/create/success"
       end
