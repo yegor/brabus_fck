@@ -9,7 +9,7 @@ module BrabusStress
     protected
     
     def parse_config
-      @server  = YAML.load_file(File.join($BRABUS_STRESS_ROOT, "config/server.yml")).symbolize_keys!
+      @server = YAML.load_file(File.join($BRABUS_STRESS_ROOT, "config/server.yml")).symbolize_keys!
     end
   end
 end

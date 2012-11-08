@@ -1,7 +1,8 @@
 source "http://rubygems.org"
 
-gem 'dante', :git => "git://github.com/bazaarlabs/dante.git"
 gem 'json'
 gem 'i18n'
 gem 'active_support'
 gem 'uuid'
+# gem 'eventmachine'
+gem 'em-synchrony', :git => "git://github.com/igrigorik/em-synchrony.git"

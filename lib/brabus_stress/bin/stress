@@ -3,8 +3,21 @@
 
 require File.expand_path("boot", File.dirname(__FILE__))
 
+require "em-synchrony"
+require "em-synchrony/fiber_iterator"
+
 scenarios = [BrabusStress::Scenarios::Geocode, BrabusStress::Scenarios::Auth, BrabusStress::Scenarios::LiveFeed, BrabusStress::Scenarios::Location]
 
-Dante.run('stress') do
-  scenarios.sample.send :run!
-end
+
+scenarios_pack = []
+BrabusStress::THREADS_COUNT.times {scenarios_pack << scenarios.sample}
+
+EventMachine.synchrony {
+  EventMachine::Synchrony::Iterator.new(scenarios_pack, scenarios_pack.size).each do |scenario, iter|
+    scenario.send :run! do
+      iter.next
+    end
+  end
+  
+  EventMachine.stop
+}
