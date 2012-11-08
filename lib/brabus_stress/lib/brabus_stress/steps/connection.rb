@@ -7,7 +7,7 @@ class Handler < EventMachine::Connection
   attr_accessor :on_connect, :on_data
   
   def post_init
-    puts "Starting TLS"
+    # puts "Starting TLS"
     start_tls
   end
   
@@ -16,12 +16,12 @@ class Handler < EventMachine::Connection
   end
   
   def ssl_handshake_completed
-    p "connected"
+    # p "connected"
     on_connect.try(:call)
   end
 
   def unbind
-    p 'connection closed'
+    # p 'connection closed'
   end
   
 end

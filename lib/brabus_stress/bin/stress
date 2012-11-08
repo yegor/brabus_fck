@@ -6,14 +6,16 @@ require File.expand_path("boot", File.dirname(__FILE__))
 require "em-synchrony"
 require "em-synchrony/fiber_iterator"
 
-scenarios = [BrabusStress::Scenarios::Geocode, BrabusStress::Scenarios::Auth, BrabusStress::Scenarios::LiveFeed, BrabusStress::Scenarios::Location]
+EM.threadpool_size = BrabusStress::THREADS_COUNT
 
+scenarios = [BrabusStress::Scenarios::Geocode, BrabusStress::Scenarios::Auth, BrabusStress::Scenarios::LiveFeed, BrabusStress::Scenarios::Location]
 
 scenarios_pack = []
 BrabusStress::THREADS_COUNT.times {scenarios_pack << scenarios.sample}
 
 EventMachine.synchrony {
   EventMachine::Synchrony::Iterator.new(scenarios_pack, scenarios_pack.size).each do |scenario, iter|
+    # p "starting #{scenario.to_s}" 
     scenario.send :run! do
       iter.next
     end

@@ -10,12 +10,12 @@ module BrabusStress
     
     def initialize(object, scenario)
       @object = object
-      object.logger.info "#{Time.now.utc.strftime "%H:%M:%S:%L"} | starting #{scenario.to_s}..."
+      p "#{Time.now.utc.strftime "%H:%M:%S:%L"} | starting #{scenario.to_s}..."
     end
     
     def method_missing(sym, *args, &block)
       time = Time.now.utc
-      @object.logger.info "action | #{sym.to_s} | #{Time.now.utc.strftime "%H:%M:%S:%L"} | \t #{Benchmark.measure {@object.__send__(sym, *args, &block)}}"
+      @object.logger.info "action | #{args.first} | #{Time.now.utc.strftime "%H:%M:%S:%L"} | \t #{Benchmark.measure {@object.__send__(sym, *args, &block)}}"
     end
     
   end

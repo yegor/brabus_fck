@@ -9,9 +9,9 @@ module BrabusStress
   
   GEOCODE_TERM      = "Waterloo"
   
-  LOOP_COUNT        = 5
+  LOOP_COUNT        = 100
   
-  THREADS_COUNT     = 40
+  THREADS_COUNT     = 100
   
   def self.random_latitude
     BrabusStress::LATITUDE + (Random.new.rand(BrabusStress::RANGE_FACTOR_LAT / 2.0) * 2 - BrabusStress::RANGE_FACTOR_LAT)

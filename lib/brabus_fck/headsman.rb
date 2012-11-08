@@ -30,17 +30,17 @@ module BrabusFck
     def stress_test
       @logger.info "Starting stress test..."
       
-      threads = []
-      @config.servers.each { |server|
-        threads << Thread.new {
-          Net::SSH.start(server[:host], server[:user], :keys => @config.keys) do |ssh|
-            ssh.exec "cd ~/brabus_stress && ./bin/stress"
-            # ssh.exec "sudo apt-get -y install libssl-dev"
+      Net::SSH::Multi.start do |session|
+        session.group :load_test do
+          @config.servers.each do |server|
+            session.use "#{server[:user]}@#{server[:host]}", :keys => @config.keys
           end
-        }
-      }
+        end
+        
+        session.with(:load_test).exec("cd ~/brabus_stress && ./bin/stress")
+        # session.with(:load_test).exec("cd brabus_stress && bundle exec gem uninstall eventmachine --install-dir=/home/ubuntu/.bundler/ruby/1.9.1").wait
+      end
       
-      threads.each {|thread| thread.join }
       @logger.info "Stress test completed"
       dump_logs!
     end
