@@ -59,20 +59,20 @@ module BrabusStress
       end   
       
       def wait_reply(reply_to, &block)
-        current_packet = BrabusStress::Cpacket::Packet.new
-        the_rest = ""
+        @current_packet ||= BrabusStress::Cpacket::Packet.new
+        @the_rest ||= ""
                 
         @socket.on_data = lambda do |data|
-          the_rest = the_rest.to_s + data
+          @the_rest = @the_rest.to_s + data
                   
           while not the_rest.nil?
-            the_rest = current_packet.append(the_rest)
+            @the_rest = @current_packet.append(@the_rest)
                     
-            if current_packet.parsed?
-              data = JSON.parse(current_packet.chunks.first.data)
-              current_packet = BrabusStress::Cpacket::Packet.new
+            if @current_packet.parsed?
+              json = JSON.parse(@current_packet.chunks.first.data)
+              @current_packet = BrabusStress::Cpacket::Packet.new
                       
-              block.call(data) if data['reply_to'] == reply_to
+              block.call(json) if json['reply_to'] == reply_to
             end
           end
         end

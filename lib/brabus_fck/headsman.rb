@@ -35,6 +35,7 @@ module BrabusFck
         threads << Thread.new {
           Net::SSH.start(server[:host], server[:user], :keys => @config.keys) do |ssh|
             ssh.exec "cd ~/brabus_stress && ./bin/stress"
+            # ssh.exec "sudo apt-get -y install libssl-dev"
           end
         }
       }
@@ -54,8 +55,8 @@ module BrabusFck
           end
         end
         
-        # session.with(:load_test).exec("bash -l -c 'cd brabus_stress && rvm 1.9.2 && bundle install'").wait
-        session.with(:load_test).exec("bash -l -c 'cd brabus_stress && bundle install'").wait
+        session.with(:load_test).exec("cd brabus_stress && bundle install --deployment")
+        # session.with(:load_test).exec("cd brabus_stress && bundle exec gem uninstall eventmachine --install-dir=/home/ubuntu/.bundler/ruby/1.9.1").wait
       end
       
       @logger.info "Configuring completed."

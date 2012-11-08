@@ -10,7 +10,7 @@ module BrabusStress
           runner.sync_delta
           BrabusStress::LOOP_COUNT.times {|i| runner.post_to_live_feed(i)}
           runner.logout
-          runner.disconnect
+          # runner.disconnect
         end
       end
 

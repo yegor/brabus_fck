@@ -10,7 +10,7 @@ module BrabusStress
           runner.sync_delta
           BrabusStress::LOOP_COUNT.times {runner.location}
           runner.logout
-          runner.disconnect
+          # runner.disconnect
         end
       end
       

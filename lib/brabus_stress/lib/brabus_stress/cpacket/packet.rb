@@ -232,7 +232,9 @@ module BrabusStress
           
           #  parse out the current version of packet
           self.version, self.buffer = self.buffer[0].ord, self.buffer[1..-1]
-          raise BrabusStress::Cpacket::InvalidPacketError.new("Version of packet is invalid, #{ self.version } supplied, 1 expected") unless self.version == 1
+          unless self.version == 1
+            raise BrabusStress::Cpacket::InvalidPacketError.new("Version of packet is invalid, #{ self.version } supplied, 1 expected")
+          end
         end
         
         if self.number_of_chunks.blank?
