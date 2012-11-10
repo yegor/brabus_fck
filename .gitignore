@@ -1,4 +1,5 @@
 config/*.yml
 results
 log/**
+lib/brabus_stress/logs/**
 results/**

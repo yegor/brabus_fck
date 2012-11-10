@@ -28,7 +28,7 @@ module BrabusStress
       
       def balance(memo = nil, &block)
         sync(self, block) do |runner|
-          runner.open_connection self.config.server
+          runner.open_connection @server
           runner.send_data :path => "users/auth/balance", :payload => {:shard => @server}
           runner.wait_reply "balancing/settled"
           runner.log_server_data

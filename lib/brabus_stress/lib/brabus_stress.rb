@@ -7,9 +7,9 @@ module BrabusStress
   RANGE_FACTOR_LAT  = 0.1
   RANGE_FACTOR_LNG  = 0.25
   
-  GEOCODE_TERM      = "Waterloo"
+  GEOCODE_TERM      = "LasVegas"
   
-  LOOP_COUNT        = 30
+  LOOP_COUNT        = 50
   
   THREADS_COUNT     = 30
   

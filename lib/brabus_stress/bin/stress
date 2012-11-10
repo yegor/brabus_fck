@@ -15,6 +15,7 @@ BrabusStress::THREADS_COUNT.times {scenarios_pack << scenarios.sample}
 
 @size = scenarios_pack.size
 
+EventMachine.epoll
 EventMachine.run do
   scenarios_pack.each do |pack|
     pack.send :run! do
