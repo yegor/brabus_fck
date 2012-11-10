@@ -32,7 +32,7 @@ module BrabusStress
           runner.send_data :path => "users/auth/balance", :payload => {:shard => @server}
           runner.wait_reply "balancing/settled"
           runner.log_server_data
-          runner.log_connected
+          # runner.log_connected
         end        
       end
       

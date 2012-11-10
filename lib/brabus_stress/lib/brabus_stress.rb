@@ -11,7 +11,7 @@ module BrabusStress
   
   LOOP_COUNT        = 50
   
-  THREADS_COUNT     = 30
+  THREADS_COUNT     = 20
   
   def self.random_latitude
     BrabusStress::LATITUDE + (Random.new.rand(BrabusStress::RANGE_FACTOR_LAT / 2.0) * 2 - BrabusStress::RANGE_FACTOR_LAT)
