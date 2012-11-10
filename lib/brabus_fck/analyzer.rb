@@ -1,4 +1,5 @@
 require 'csv'
+require 'benchmark'
 
 module BrabusFck
   class Analyzer
@@ -28,7 +29,7 @@ module BrabusFck
       @connections = []
       
       parse_results
-      report!
+      p Benchmark.measure { report! }
     end
     
     def parse_results
@@ -182,8 +183,13 @@ module BrabusFck
           
           result = []
           @keys.each_with_index do |stat_name, index|
-            result << "#{net_bm_count[stat_name]} | %3.4f" % net_bm[stat_name]
-            result << "#{serv_bm_count[stat_name]} | %3.4f" % serv_bm[stat_name]
+            net_average = 0
+            serv_average = 0
+            net_average = (net_bm[stat_name] / net_bm_count[stat_name]) if net_bm_count[stat_name] > 0
+            serv_average = (serv_bm[stat_name] / serv_bm_count[stat_name]) if serv_bm_count[stat_name] > 0
+            
+            result << "#{net_bm_count[stat_name]} | %3.4f" % net_average
+            result << "#{serv_bm_count[stat_name]} | %3.4f" % serv_average
           end
           
           csv << [batch.strftime("%H:%M:%S")] + result + [@connections[index]]
