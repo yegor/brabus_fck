@@ -15,7 +15,13 @@ module BrabusStress
     
     def method_missing(sym, *args, &block)
       time = Time.now.utc
-      @object.logger.info "action | #{args.first} | #{Time.now.utc.strftime "%H:%M:%S:%L"} | \t #{Benchmark.measure {@object.__send__(sym, *args, &block)}}"
+      
+      @object.__send__(sym, *args) do |result|
+        # we get here upon execution finalization
+        bm = Time.now.utc.to_f - time.to_f
+        @object.logger.info "action | #{args.first} | #{Time.now.utc.strftime "%H:%M:%S:%L"} | \t %3.6f" % bm
+        yield result
+      end
     end
     
   end

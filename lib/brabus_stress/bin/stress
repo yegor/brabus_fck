@@ -13,13 +13,42 @@ scenarios = [BrabusStress::Scenarios::Geocode, BrabusStress::Scenarios::Auth, Br
 scenarios_pack = []
 BrabusStress::THREADS_COUNT.times {scenarios_pack << scenarios.sample}
 
-EventMachine.synchrony {
-  EventMachine::Synchrony::Iterator.new(scenarios_pack, scenarios_pack.size).each do |scenario, iter|
-    # p "starting #{scenario.to_s}" 
-    scenario.send :run! do
-      iter.next
-    end
+@size = scenarios_pack.size
+
+EventMachine.run do
+  scenarios_pack.each do |pack|
+    pack.send :run! do
+      p "#{Time.now.utc}: Scenario #{pack.to_s} completed."
+      @size -= 1
+      EM.stop if @size == 0
+    end 
   end
-  
-  EventMachine.stop
-}
+end
+
+# threads = scenarios_pack.map do |pack|
+#   fork do
+#     EventMachine.run do
+#       pack.send :run! do
+#       end
+#     end
+#   end
+# end
+# 
+# threads.each { |pid| Process.waitpid(pid) }
+
+# EventMachine.synchrony {
+#   EM::Synchrony::FiberIterator.new(scenarios_pack, scenarios_pack.size).each do |scenario, iter|
+#     scenario.send :run! do
+#       p "#{Time.now.utc}: Scenario #{pack.to_s} completed."
+#       iter.next
+#     end
+#   end
+# }
+# 
+# results = EM::Synchrony::Iterator.new(urls, concurrency).map do |url, iter|
+# 
+#      # fire async requests, on completion advance the iterator
+#      http = EventMachine::HttpRequest.new(url).aget
+#      http.callback { iter.return(http) }
+#      http.errback { iter.return(http) }
+#  end

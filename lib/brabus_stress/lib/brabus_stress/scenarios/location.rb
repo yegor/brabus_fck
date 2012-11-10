@@ -6,7 +6,10 @@ module BrabusStress
       def self.run!(memo = nil, &block)
         sync(BrabusStress::BenchmarkProxy.new(BrabusStress::Runner.new, self), block) do |runner|
           runner.connect
-          runner.signup_and_login
+          runner.balance
+          runner.signup
+          runner.confirm
+          runner.login
           runner.sync_delta
           BrabusStress::LOOP_COUNT.times {runner.location}
           runner.logout

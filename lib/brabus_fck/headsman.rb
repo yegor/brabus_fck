@@ -21,6 +21,11 @@ module BrabusFck
       stress_test
     end
     
+    def report!
+      @analyzer = BrabusFck::Analyzer.new
+      @analyzer.report!
+    end
+    
     def dump_logs!
       @uploader.download_logs
     end
@@ -33,16 +38,19 @@ module BrabusFck
       Net::SSH::Multi.start do |session|
         session.group :load_test do
           @config.servers.each do |server|
-            session.use "#{server[:user]}@#{server[:host]}", :keys => @config.keys
+            session.use "#{server[:user]}@#{server[:host]}", :keys => @config.keys  
           end
         end
         
         session.with(:load_test).exec("cd ~/brabus_stress && ./bin/stress")
+        session.with(:load_test).exec("for i in {1..#{@config.config[:amount]}}; do PID=$i bash -c 'cd ~/brabus_stress && ./bin/stress' & done")
+        
         # session.with(:load_test).exec("cd brabus_stress && bundle exec gem uninstall eventmachine --install-dir=/home/ubuntu/.bundler/ruby/1.9.1").wait
       end
       
       @logger.info "Stress test completed"
       dump_logs!
+      report!
     end
     
     def setup_remote_application

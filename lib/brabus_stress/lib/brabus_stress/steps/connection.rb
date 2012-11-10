@@ -4,10 +4,13 @@ require 'openssl'
 require 'timeout'
 
 class Handler < EventMachine::Connection
-  attr_accessor :on_connect, :on_data
+  attr_accessor :on_connect, :on_data, :mutex, :current_packet, :the_rest
+  
+  def initialize
+    self.mutex = Mutex.new
+  end
   
   def post_init
-    # puts "Starting TLS"
     start_tls
   end
   
@@ -16,12 +19,10 @@ class Handler < EventMachine::Connection
   end
   
   def ssl_handshake_completed
-    # p "connected"
     on_connect.try(:call)
   end
 
   def unbind
-    # p 'connection closed'
   end
   
 end
@@ -29,11 +30,11 @@ end
 module BrabusStress
   module Steps
     module Connection
-      attr_accessor :no_ssl_socket, :socket, :the_rest
+      attr_accessor :no_ssl_socket, :socket
       
       def close_connection(memo = nil, &block)
         @socket.close_connection
-        block.call
+        self.log_disconnected(memo, &block)
       end
       
       def open_connection(server = @config.server, &block)
@@ -42,9 +43,15 @@ module BrabusStress
         @socket.on_connect = block
       end
       
+      
+      def log_server_data(memo = nil, &block)
+        logger.info "!action | #{memo['reply_to']} | #{(Time.now.utc - memo[:completed_in].to_f).strftime "%H:%M:%S:%L"} | \t %3.6f" % memo['completed_in']
+        block.call
+      end
+      
       def log_connected(memo = nil, &block)
         @logger.info "connection | #{Time.now.utc.strftime "%H:%M:%S:%L"} | 1+"
-        block.call
+        block.call        
       end
       
       def log_disconnected(memo = nil, &block)
@@ -59,20 +66,26 @@ module BrabusStress
       end   
       
       def wait_reply(reply_to, &block)
-        @current_packet ||= BrabusStress::Cpacket::Packet.new
-        @the_rest ||= ""
+        @socket.current_packet ||= BrabusStress::Cpacket::Packet.new
+        @socket.the_rest ||= ""
                 
         @socket.on_data = lambda do |data|
-          @the_rest = @the_rest.to_s + data
+          EM.defer do
+            @socket.mutex.synchronize do
+              @socket.the_rest = @socket.the_rest.to_s + data
                   
-          while not the_rest.nil?
-            @the_rest = @current_packet.append(@the_rest)
+              while not @socket.the_rest.nil?
+                @socket.the_rest = @socket.current_packet.append(@socket.the_rest)
                     
-            if @current_packet.parsed?
-              json = JSON.parse(@current_packet.chunks.first.data)
-              @current_packet = BrabusStress::Cpacket::Packet.new
+                if @socket.current_packet.parsed?
+                  json = JSON.parse(@socket.current_packet.chunks.first.data)
+                  @socket.current_packet = BrabusStress::Cpacket::Packet.new
                       
-              block.call(json) if json['reply_to'] == reply_to
+                  puts "Got #{reply_to}!!!"
+                      
+                  EM.run { block.call(json) } if json['reply_to'] == reply_to
+                end
+              end
             end
           end
         end

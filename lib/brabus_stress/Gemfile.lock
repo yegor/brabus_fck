@@ -1,0 +1,37 @@
+GIT
+  remote: git://github.com/eventmachine/eventmachine.git
+  revision: b96b736b39261f7d74f013633cc7cd619afa20c4
+  specs:
+    eventmachine (1.0.0)
+
+GIT
+  remote: git://github.com/igrigorik/em-synchrony.git
+  revision: fe592a4b9b5345bca329477cb8f2f8d186b6fc7f
+  specs:
+    em-synchrony (1.0.2)
+      eventmachine (>= 1.0.0.beta.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    active_support (3.0.0)
+      activesupport (= 3.0.0)
+    activesupport (3.0.0)
+    i18n (0.6.1)
+    json (1.7.5)
+    macaddr (1.6.1)
+      systemu (~> 2.5.0)
+    systemu (2.5.2)
+    uuid (2.3.5)
+      macaddr (~> 1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  active_support
+  em-synchrony!
+  eventmachine!
+  i18n
+  json
+  uuid

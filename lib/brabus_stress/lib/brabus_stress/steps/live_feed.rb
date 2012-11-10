@@ -8,6 +8,7 @@ module BrabusStress
                            :payload => {:message => {:message => "#{memo} Testing live feed post"},
                            :marker => {:lat => BrabusStress.random_latitude, :lng => BrabusStress.random_longitude, :kind => "message"}})
           runner.wait_reply "messages/live_feed/create/success"
+          runner.log_server_data
         end
       end
     

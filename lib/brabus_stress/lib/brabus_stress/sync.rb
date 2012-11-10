@@ -21,12 +21,12 @@ module BrabusStress
     def start
       perform_action @actions, nil
     end
-
+    
     protected
     
       def perform_action(actions, argument)
         if actions.empty?
-          finalizer.try(:call)
+          @finalizer.try(:call)
           return
         end
         
@@ -34,6 +34,9 @@ module BrabusStress
         
         args = (action[:args] || [])
         args << argument unless argument.blank?
+        
+        # @object.benchmark += argument['completed_in'].to_f if !argument.blank? && !argument['completed_in'].blank?
+        
         @object.send action[:action], *args do |result|
           perform_action(actions, result)
         end
@@ -42,5 +45,6 @@ module BrabusStress
       def method_missing(method, *args, &block)
         @actions << {:action => method, :args => args}
       end
+      
   end
 end

@@ -2,13 +2,28 @@ require 'csv'
 
 module BrabusFck
   class Analyzer
-    ACTION_REGEXP     = /.+\|\s(\w+)\s\|\s(.+?)\s.+?(\d+\.\d+)\)$/i
+    NET_ACTION_REGEXP     = /action.+\|\s(\w+)\s\|\s(.+?)\s+(\d+\.\d+)$/i
+    SERVER_ACTION_REGEXP  = /!action.+\|\s(.+?)\s\|\s(.+?)\s+(\d+\.\d+)$/i
     CONNECTION_REGEXP = /.+\|\s(.+?)\s\|.+?1([\+|-])$/i
+    
+    ACTIONS_MAP = {
+      "connect"           => "balancing/move",
+      "balance"           => "balancing/settled",
+      "signup"            => "users/auth/signup/success",
+      "confirm"           => "users/auth/signup/confirmed",
+      "login"             => "users/auth/login/success",
+      "geocode_direct"    => "geo/geocoding/direct/success",
+      "location"          => "users/profile/location/success",
+      "post_to_live_feed" => "messages/live_feed/create/success",
+      "sync_delta"        => "sync/delta/success",
+      "logout"            => "users/auth/logout/success"
+      }.invert
     
     attr_accessor :stats, :connections
     
     def initialize
       @stats  = {}
+      @server_stats = {}
       @connections = []
       parse_results
     end
@@ -20,13 +35,23 @@ module BrabusFck
       
       Dir.glob(File.expand_path("results/**/*.log", BrabusFck.app_root)) do |file|
         File.open(file).each do |line|
-          if matchdata = line.match(ACTION_REGEXP)
+          line.gsub!("\t", "")
+          if matchdata = line.match(NET_ACTION_REGEXP)
             action = matchdata[1]
             time = Time.strptime matchdata[2], "%H:%M:%S:%L"
             benchmark = matchdata[3].to_f
             
             @stats[action.to_sym] ||= []
             @stats[action.to_sym] << {:time => time, :benchmark => benchmark}
+          end
+          
+          if matchdata = line.match(SERVER_ACTION_REGEXP)
+            action = matchdata[1]
+            time = Time.strptime matchdata[2], "%H:%M:%S:%L"
+            benchmark = matchdata[3].to_f
+
+            @server_stats[ACTIONS_MAP[action].to_sym] ||= []
+            @server_stats[ACTIONS_MAP[action].to_sym] << {:time => time, :benchmark => benchmark}
           end
           
           if matchdata = line.match(CONNECTION_REGEXP)
@@ -44,6 +69,7 @@ module BrabusFck
       sort = Proc.new {|x,y| x[:time].to_f <=> y[:time].to_f }
       
       @stats.each {|action, timestamps| timestamps.sort! &sort}
+      @server_stats.each {|action, timestamps| timestamps.sort! &sort}
       connections_deltas.sort! &sort
       
       # Fulfill batches array with 1 second step timestamps
@@ -59,10 +85,10 @@ module BrabusFck
       end
       
       CSV.open(File.expand_path("results/report.csv"), 'w') do |csv|
-        csv << ["Time"] + @stats.keys.sort + ["Connections"]
+        csv << ["Time"] + @stats.keys.sort + ["________"] + @server_stats.keys.sort + ["Connections"]
         
         batches.each do |time|
-           means = @stats.keys.sort.map do |name|
+          means = @stats.keys.sort.map do |name|
             stats = @stats[name]
             batch_stats = stats.select { |stat| stat[:time] <= time and stat[:time] > time - 1.second }
           
@@ -73,9 +99,21 @@ module BrabusFck
             end
           end
           
-          csv << [time.strftime("%H:%M:%S")] + means + [@connections[time]]
+          server_means = @server_stats.keys.sort.map do |name|
+            stats = @server_stats[name]
+            batch_stats = stats.select { |stat| stat[:time] <= time and stat[:time] > time - 1.second }
+          
+            if batch_stats.size > 0
+              batch_stats.sum { |stat| stat[:benchmark].to_f } / batch_stats.size.to_f
+            else
+              "-"
+            end
+          end
+          
+          csv << [time.strftime("%H:%M:%S")] + means + ["________"] + server_means + [@connections[time]]
         end
       end   
+      
     end
     
     def report!
