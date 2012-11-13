@@ -1,6 +1,6 @@
 module BrabusStress
   # Configured for the center of London with a range factor set to the city radius
-  USER_GROUP        = "LasVegas"
+  USER_GROUP        = "Barcelona"
   LATITUDE          = 41.387917
   LONGITUDE         = 2.1699187
   
@@ -11,7 +11,7 @@ module BrabusStress
   
   LOOP_COUNT        = 30
   
-  THREADS_COUNT     = 30
+  THREADS_COUNT     = 10
   
   def self.random_latitude
     BrabusStress::LATITUDE + (Random.new.rand(BrabusStress::RANGE_FACTOR_LAT / 2.0) * 2 - BrabusStress::RANGE_FACTOR_LAT)

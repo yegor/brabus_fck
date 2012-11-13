@@ -10,7 +10,8 @@ module BrabusStress
     
     def initialize
       @config = BrabusStress::Config.new
-      @logger = Logger.new File.expand_path("logs/#{Process.pid}_#{UUID.generate.gsub("-", "")}.log", $BRABUS_STRESS_ROOT)
+      #@logger = Logger.new File.expand_path("logs/#{Process.pid}_#{UUID.generate.gsub("-", "")}.log", $BRABUS_STRESS_ROOT)
+      @logger = ActiveSupport::BufferedLogger.new(File.expand_path("logs/#{Process.pid}_#{UUID.generate.gsub("-", "")}.log", $BRABUS_STRESS_ROOT))
       @benchmark = 0.0
     end
   end
