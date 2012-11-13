@@ -103,7 +103,7 @@ module BrabusFck
       
       CSV.open(File.expand_path("results/report.csv"), 'w') do |csv|
         head = []
-        @keys.each_with_index {|stat_name, index| head << stat_name; head << "Server" }
+        @keys.each_with_index {|stat_name, index| head << "N #{stat_name}"; head << stat_name; head << "N Server"; head << "Server" }
         
         csv << ["Time"] + head + ["Connections"]
         # Calculate active connections per second
@@ -188,11 +188,11 @@ module BrabusFck
             net_average = (net_bm[stat_name] / net_bm_count[stat_name]) if net_bm_count[stat_name] > 0
             serv_average = (serv_bm[stat_name] / serv_bm_count[stat_name]) if serv_bm_count[stat_name] > 0
             
-            result << "#{net_bm_count[stat_name]} | %3.4f" % net_average
-            result << "#{serv_bm_count[stat_name]} | %3.4f" % serv_average
+            result += ["#{net_bm_count[stat_name]}", "%3.4f"% net_average]
+            result += ["#{serv_bm_count[stat_name]}", "%3.4f"% serv_average]
           end
           
-          csv << [batch.strftime("%H:%M:%S")] + result + [@connections[index]]
+          csv << [batch.strftime("%H:%M:%S")] + result.flatten + [@connections[index]]
         end
       end
     end
