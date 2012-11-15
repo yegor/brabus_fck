@@ -26,6 +26,7 @@ module BrabusStress
     
       def perform_action(actions, argument)
         if actions.empty?
+          @object.logger.flush
           @finalizer.try(:call)
           return
         end
@@ -35,10 +36,14 @@ module BrabusStress
         args = (action[:args] || [])
         args << argument unless argument.blank?
         
-        # @object.benchmark += argument['completed_in'].to_f if !argument.blank? && !argument['completed_in'].blank?
-        
-        @object.send action[:action], *args do |result|
-          perform_action(actions, result)
+        begin
+          @object.send action[:action], *args do |result|
+            perform_action(actions, result)
+          end
+        rescue => e
+          @object.logger.info "#{e.message}"
+        ensure
+          @object.logger.flush
         end
       end
       

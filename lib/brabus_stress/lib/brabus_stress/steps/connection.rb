@@ -17,6 +17,10 @@ class Handler < EventMachine::Connection
   def ssl_handshake_completed
     on_connect.try(:call)
   end
+  
+  def comm_inactivity_timeout
+    30.0
+  end
 
   def unbind
     on_disconnect.try(:call)
@@ -79,17 +83,23 @@ module BrabusStress
         @the_rest ||= ""
                 
         @socket.on_data = lambda do |data|
-          @the_rest = @the_rest.to_s + data
-                  
-          while not the_rest.nil?
-            @the_rest = @current_packet.append(@the_rest)
-                    
-            if @current_packet.parsed?
-              data = @current_packet.chunks.first.data
-              @current_packet = BrabusStress::Cpacket::Packet.new
-                      
-              block.call(JSON.parse(data)) if data.index('"reply_to":"' + reply_to + '"')
+          begin
+            @the_rest = @the_rest.to_s + data
+
+            while not the_rest.nil?
+              @the_rest = @current_packet.append(@the_rest)
+
+              if @current_packet.parsed?
+                data = @current_packet.chunks.first.data
+                @current_packet = BrabusStress::Cpacket::Packet.new
+
+                block.call(JSON.parse(data)) if data.index('"reply_to":"' + reply_to + '"')
+              end
             end
+          rescue => e
+            @logger.info "#{e.message}"
+          ensure
+            @logger.flush
           end
         end
       end   
